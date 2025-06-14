@@ -10,6 +10,10 @@ export default class extends Controller {
     this.figures = Array.from({ length: 3 }, () =>
       Array.from({ length: 5 }, () => Array(5).fill(0))
     );
+
+    // Add mouse event tracking
+    this.isMouseDown = false;
+    this.lastSelectedCell = null;
   }
 
   toggleMainCell(event) {
@@ -19,6 +23,7 @@ export default class extends Controller {
     this.mainGrid[row][col] = this.mainGrid[row][col] ? 0 : 1;
     cell.classList.toggle("bg-purple-400");
     cell.classList.toggle("bg-[#f2f4ff]");
+    this.lastSelectedCell = { row, col };
   }
 
   toggleFigureCell(event) {
@@ -29,6 +34,53 @@ export default class extends Controller {
     this.figures[fig][row][col] = this.figures[fig][row][col] ? 0 : 1;
     cell.classList.toggle("bg-purple-400");
     cell.classList.toggle("bg-[#f2f4ff]");
+    this.lastSelectedCell = { fig, row, col };
+  }
+
+  // Add mouse event handlers
+  handleMouseDown(event) {
+    this.isMouseDown = true;
+    if (event.target.dataset.row !== undefined) {
+      if (event.target.dataset.figure !== undefined) {
+        this.toggleFigureCell(event);
+      } else {
+        this.toggleMainCell(event);
+      }
+    }
+  }
+
+  handleMouseMove(event) {
+    if (!this.isMouseDown) return;
+
+    const cell = event.target;
+    if (!cell.dataset.row) return;
+
+    const row = parseInt(cell.dataset.row);
+    const col = parseInt(cell.dataset.col);
+
+    if (cell.dataset.figure !== undefined) {
+      const fig = parseInt(cell.dataset.figure);
+      if (
+        this.lastSelectedCell &&
+        (this.lastSelectedCell.fig !== fig ||
+          this.lastSelectedCell.row !== row ||
+          this.lastSelectedCell.col !== col)
+      ) {
+        this.toggleFigureCell(event);
+      }
+    } else {
+      if (
+        this.lastSelectedCell &&
+        (this.lastSelectedCell.row !== row || this.lastSelectedCell.col !== col)
+      ) {
+        this.toggleMainCell(event);
+      }
+    }
+  }
+
+  handleMouseUp() {
+    this.isMouseDown = false;
+    this.lastSelectedCell = null;
   }
 
   clearAll() {

@@ -52,7 +52,7 @@
               <% 8.times do |col| %>
                 <div
                   class="w-8 h-8 bg-[#f2f4ff] border border-[#e5e9ff] rounded cursor-pointer"
-                  data-action="click->manual#toggleMainCell"
+                  data-action="mousedown->manual#handleMouseDown mouseover->manual#handleMouseMove mouseup->manual#handleMouseUp"
                   data-row="<%= row %>"
                   data-col="<%= col %>"
                 ></div>
@@ -72,7 +72,7 @@
                     <% 5.times do |col| %>
                       <div
                         class="w-5 h-5 bg-[#f2f4ff] border border-[#e5e9ff] rounded cursor-pointer"
-                        data-action="click->manual#toggleFigureCell"
+                        data-action="mousedown->manual#handleMouseDown mouseover->manual#handleMouseMove mouseup->manual#handleMouseUp"
                         data-figure="<%= fig %>"
                         data-row="<%= row %>"
                         data-col="<%= col %>"
