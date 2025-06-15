@@ -92,6 +92,26 @@
       </div>
     </div>
   </div>
+
+  <!-- Next Moves Card -->
+  <div id="next-moves-card" class="w-full flex flex-col items-center mt-12">
+    <h2 class="text-3xl font-bold mb-6">Placement Steps</h2>
+    <div class="flex gap-8 justify-center">
+      <% 3.times do |step| %>
+        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center min-w-[260px]">
+          <span class="font-bold text-xl mb-2">Step <%= step + 1 %></span>
+          <span class="text-gray-500 mb-4">Completed lines: <span id="completed-lines-<%= step %>">0</span></span>
+          <div class="grid grid-cols-8 gap-1 mb-2" id="step-grid-<%= step %>">
+            <% 8.times do |row| %>
+              <% 8.times do |col| %>
+                <div class="w-6 h-6 bg-[#f2f4ff] border border-[#e5e9ff] rounded"></div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -125,5 +145,81 @@
       manualTab.addEventListener("click", showManualEntry);
       screenshotTab.addEventListener("click", showScreenshotEntry);
     }
+
+    // // Example mock data for 3 steps
+    // const steps = [
+    //   {
+    //     grid: [
+    //       // 8x8 grid, 0=empty, 1=blue, 2=orange
+    //       [2,2,0,0,0,0,0,0],
+    //       [2,2,0,0,0,0,0,0],
+    //       [0,0,1,0,0,0,0,0],
+    //       [0,0,1,0,0,0,0,0],
+    //       [0,0,1,0,0,0,0,0],
+    //       [0,0,1,0,0,0,0,0],
+    //       [0,0,0,0,0,0,0,0],
+    //       [0,0,0,0,0,0,0,0],
+    //     ],
+    //     completedLines: 0
+    //   },
+    //   {
+    //     grid: [
+    //       [1,1,1,1,0,0,0,0],
+    //       [1,1,1,1,0,0,0,0],
+    //       [0,0,2,2,0,0,0,0],
+    //       [0,0,2,2,0,0,0,0],
+    //       [0,0,2,2,0,0,0,0],
+    //       [0,0,2,2,0,0,0,0],
+    //       [0,0,0,0,0,0,0,0],
+    //       [0,0,0,0,0,0,0,0],
+    //     ],
+    //     completedLines: 0
+    //   },
+    //   {
+    //     grid: [
+    //       [1,1,1,1,0,0,0,0],
+    //       [1,1,1,1,0,0,0,0],
+    //       [0,0,2,2,0,0,0,0],
+    //       [0,0,2,2,0,0,0,0],
+    //       [0,0,2,2,0,0,0,0],
+    //       [0,0,2,2,0,0,0,0],
+    //       [0,0,0,0,0,0,0,0],
+    //       [2,2,2,2,2,2,2,2], // completed line
+    //     ],
+    //     completedLines: 1,
+    //     completedRows: [7] // highlight row 7
+    //   }
+    // ];
+
+    // steps.forEach((step, idx) => {
+    //   const gridDiv = document.getElementById(`step-grid-${idx}`);
+    //   const completedLinesSpan = document.getElementById(`completed-lines-${idx}`);
+    //   completedLinesSpan.textContent = step.completedLines;
+
+    //   // Fill grid
+    //   Array.from(gridDiv.children).forEach((cell, i) => {
+    //     const row = Math.floor(i / 8);
+    //     const col = i % 8;
+    //     cell.classList.remove("block-blue", "block-orange", "completed-line");
+    //     if (step.grid[row][col] === 1) cell.classList.add("block-blue");
+    //     if (step.grid[row][col] === 2) cell.classList.add("block-orange");
+    //     // Highlight completed row
+    //     if (step.completedRows && step.completedRows.includes(row)) {
+    //       cell.classList.add("completed-line");
+    //     }
+    //   });
+    // });
   });
 </script>
+
+<style>
+.completed-line {
+  border: 2px solid #222;
+}
+.block-blue {
+  background: #6366f1;
+}
+.block-orange {
+  background: #f59e42;
+}
+</style>

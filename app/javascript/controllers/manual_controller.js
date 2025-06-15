@@ -101,7 +101,55 @@ export default class extends Controller {
   }
 
   solve() {
-    // TODO: Implement solver logic
-    alert("Solver logic goes here!");
+    // Collect current grid and figures
+    const grid = this.mainGrid;
+    const figures = this.figures;
+
+    fetch("/solve", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')
+          .content,
+      },
+      body: JSON.stringify({ grid, figures }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        this.renderNextMoves(data);
+      })
+      .catch((error) => {
+        alert("Error solving: " + error);
+      });
+  }
+
+  renderNextMoves(solutions) {
+    // solutions: [{steps, boards, completed_lines}, ...]
+    for (let move = 0; move < 3; move++) {
+      const step = solutions[0]; // Show the best solution
+      if (!step) continue;
+      const gridDiv = document.getElementById(`step-grid-${move}`);
+      const completedLinesSpan = document.getElementById(
+        `completed-lines-${move}`
+      );
+      if (!gridDiv) continue;
+      const board = step.boards[move];
+      const completed = step.completed_lines[move];
+      completedLinesSpan.textContent = completed;
+
+      // Highlight completed rows
+      let completedRows = [];
+      for (let r = 0; r < 8; r++) {
+        if (board[r].every((cell) => cell === 1)) completedRows.push(r);
+      }
+
+      Array.from(gridDiv.children).forEach((cell, i) => {
+        const row = Math.floor(i / 8);
+        const col = i % 8;
+        cell.classList.remove("block-blue", "block-orange", "completed-line");
+        if (board[row][col] === 1) cell.classList.add("block-blue");
+        if (completedRows.includes(row)) cell.classList.add("completed-line");
+      });
+    }
   }
 }
