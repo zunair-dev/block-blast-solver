@@ -94,22 +94,75 @@
   </div>
 
   <!-- Next Moves Card -->
-  <div id="next-moves-card" class="w-full flex flex-col items-center mt-12">
+  <div id="next-moves-card" class="w-full flex flex-col items-center mt-12 hidden">
     <h2 class="text-3xl font-bold mb-6">Placement Steps</h2>
     <div class="flex gap-8 justify-center">
       <% 3.times do |step| %>
-        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center min-w-[260px]">
+        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center min-w-[280px]">
+          <div class="step-indicator"><%= step + 1 %></div>
           <span class="font-bold text-xl mb-2">Step <%= step + 1 %></span>
           <span class="text-gray-500 mb-4">Completed lines: <span id="completed-lines-<%= step %>">0</span></span>
           <div class="grid grid-cols-8 gap-1 mb-2" id="step-grid-<%= step %>">
             <% 8.times do |row| %>
               <% 8.times do |col| %>
-                <div class="w-6 h-6 bg-[#f2f4ff] border border-[#e5e9ff] rounded"></div>
+                <div class="w-7 h-7 bg-[#f2f4ff] border border-[#e5e9ff] rounded"></div>
               <% end %>
             <% end %>
           </div>
         </div>
       <% end %>
+    </div>
+  </div>
+
+  <!-- How to Use Block Blast Solver -->
+  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-lg p-10 mt-12">
+    <h2 class="text-3xl font-bold text-purple-700 mb-6">How to Use Block Blast Solver?</h2>
+    
+    <p class="text-lg mb-4">Block Blast Solver Online is a free tool that helps you find the best solution for block puzzles.</p>
+    
+    <div class="mb-4">
+      <h3 class="text-xl font-bold mb-2">Screenshot the board:</h3>
+      <p>Capture the game board from Block Blast or similar puzzle games.</p>
+    </div>
+    
+    <div class="mb-4">
+      <h3 class="text-xl font-bold mb-2">Upload and solve:</h3>
+      <p>Use the screenshot solver to upload the image or manually recreate the blocks.</p>
+    </div>
+    
+    <div class="mb-4">
+      <h3 class="text-xl font-bold mb-2">Solve and play:</h3>
+      <p>Follow the solver's analysis to achieve the best results in the game.</p>
+    </div>
+    
+    <h2 class="text-3xl font-bold text-purple-700 mt-8 mb-6">How does the Block Blast game work?</h2>
+    
+    <p class="text-lg mb-6">
+      Block Blast is a puzzle game where you place tile pieces with various block shapes to fill up the 
+      grid. Grid management and pattern recognition are challenging due to their block blast 
+      strategic movement of blocks. It is key, especially as the difficulty increases with more complex 
+      shapes. The game adds new puzzle levels to go from carefully to achieve high scores.
+    </p>
+    
+    <h2 class="text-3xl font-bold text-purple-700 mt-8 mb-6">How to get a really high score in Block Blast?</h2>
+    
+    <p class="text-lg mb-6">
+      To receive a high score in Block Blast, players must understand the scoring system and adopt 
+      effective strategies. Scores are calculated based on clearing full rows and columns, with more 
+      points awarded for multiple clears in one move. Focus on creating opportunities for chain 
+      reactions and plan ahead to make your score consistently efficient and manageable in scope, 
+      keeping the entire span clean. The ability to block placement, while considering your career 
+      throughout helps maintain good scores. Successful gameplay requires focused attention and 
+      careful planning for those looking to enhance their performance using Block Blast calculator.
+    </p>
+    
+    <div class="flex items-center justify-center mt-8 p-4 bg-purple-50 rounded-xl">
+      <div class="mr-4">
+        <p class="text-lg font-bold text-purple-700">Consider trying the <span class="text-orange-500">Block Blast Solver APP</span> to optimize your strategies further?</p>
+      </div>
+      <div>
+        <img src="/app-icon.png" alt="Block Blast Solver App" class="h-12 w-12" />
+      </div>
     </div>
   </div>
 </div>
@@ -121,6 +174,7 @@
     const manualTab = document.getElementById("fill-manually-tab");
     const manual = document.getElementById("manual-entry");
     const screenshotEntry = document.getElementById("screenshot-entry");
+    const nextMovesCard = document.getElementById("next-moves-card");
     
     function showManualEntry() {
       manual.classList.remove("hidden");
@@ -129,6 +183,9 @@
       manualTab.classList.remove("text-gray-400");
       screenshotTab.classList.remove("border-b-4", "border-purple-400", "pb-2");
       screenshotTab.classList.add("text-gray-400");
+      
+      // Hide placement steps when switching to screenshot tab
+      nextMovesCard.classList.add("hidden");
     }
 
     function showScreenshotEntry() {
@@ -138,12 +195,29 @@
       screenshotTab.classList.remove("text-gray-400");
       manualTab.classList.remove("border-b-4", "border-purple-400", "pb-2");
       manualTab.classList.add("text-gray-400");
+      
+      // Hide placement steps when switching to screenshot tab
+      nextMovesCard.classList.add("hidden");
     }
 
     if (btn && manualTab && screenshotTab && manual) {
       btn.addEventListener("click", showManualEntry);
       manualTab.addEventListener("click", showManualEntry);
       screenshotTab.addEventListener("click", showScreenshotEntry);
+    }
+    
+    // Add event listener to the solve button
+    const solveButton = document.querySelector("[data-action='click->manual#solve']");
+    if (solveButton) {
+      solveButton.addEventListener("click", function() {
+        // Show placement steps when solve is clicked
+        nextMovesCard.classList.remove("hidden");
+        
+        // Scroll to the placement steps
+        setTimeout(() => {
+          nextMovesCard.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      });
     }
 
     // // Example mock data for 3 steps
@@ -214,12 +288,57 @@
 
 <style>
 .completed-line {
-  border: 2px solid #222;
+  border: 3px solid #000 !important;
+  box-sizing: border-box;
+  animation: pulse-highlight 0.5s ease-in-out;
 }
+
+@keyframes pulse-highlight {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
 .block-blue {
   background: #6366f1;
+  border-color: #4f46e5;
 }
+
 .block-orange {
   background: #f59e42;
+  border-color: #ea580c;
+}
+
+/* Enhanced step cards */
+#next-moves-card .bg-white {
+  transition: transform 0.2s ease;
+}
+
+#next-moves-card .bg-white:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Grid cells with better borders */
+.grid div {
+  transition: all 0.1s ease;
+}
+
+.grid div:hover {
+  transform: scale(1.1);
+}
+
+/* Step indicators */
+.step-indicator {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin: 0 auto 10px;
 }
 </style>

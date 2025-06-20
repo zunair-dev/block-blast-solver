@@ -32,7 +32,7 @@ export default class extends Controller {
     const row = parseInt(cell.dataset.row);
     const col = parseInt(cell.dataset.col);
     this.figures[fig][row][col] = this.figures[fig][row][col] ? 0 : 1;
-    cell.classList.toggle("bg-purple-400");
+    cell.classList.toggle("block-orange");
     cell.classList.toggle("bg-[#f2f4ff]");
     this.lastSelectedCell = { fig, row, col };
   }
@@ -92,7 +92,7 @@ export default class extends Controller {
     this.mainGrid = Array.from({ length: 8 }, () => Array(8).fill(0));
     // Clear figures
     document.querySelectorAll("[data-figure]").forEach((cell) => {
-      cell.classList.remove("bg-purple-400");
+      cell.classList.remove("block-orange");
       cell.classList.add("bg-[#f2f4ff]");
     });
     this.figures = Array.from({ length: 3 }, () =>
@@ -105,6 +105,10 @@ export default class extends Controller {
     const grid = this.mainGrid;
     const figures = this.figures;
 
+    console.log("=== DEBUGGING SOLVE ===");
+    console.log("Main grid:", grid);
+    console.log("Figures:", figures);
+
     fetch("/solve", {
       method: "POST",
       headers: {
@@ -114,42 +118,87 @@ export default class extends Controller {
       },
       body: JSON.stringify({ grid, figures }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        console.log("Response status:", response.status);
+        return response.json();
+      })
       .then((data) => {
+        console.log("Response data:", data);
         this.renderNextMoves(data);
       })
       .catch((error) => {
+        console.error("Error solving:", error);
         alert("Error solving: " + error);
       });
   }
 
   renderNextMoves(solutions) {
-    // solutions: [{steps, boards, completed_lines}, ...]
-    for (let move = 0; move < 3; move++) {
-      const step = solutions[0]; // Show the best solution
-      if (!step) continue;
-      const gridDiv = document.getElementById(`step-grid-${move}`);
+    const solution = solutions[0]; // Show the best solution
+    if (!solution) return;
+
+    console.log("Rendering solution:", solution); // Debug log
+
+    for (let step = 0; step < 3; step++) {
+      const gridDiv = document.getElementById(`step-grid-${step}`);
       const completedLinesSpan = document.getElementById(
-        `completed-lines-${move}`
+        `completed-lines-${step}`
       );
-      if (!gridDiv) continue;
-      const board = step.boards[move];
-      const completed = step.completed_lines[move];
+
+      if (!gridDiv || !solution.boards[step]) continue;
+
+      const board = solution.boards[step];
+      const completed = solution.completed_lines[step];
       completedLinesSpan.textContent = completed;
 
-      // Highlight completed rows
-      let completedRows = [];
-      for (let r = 0; r < 8; r++) {
-        if (board[r].every((cell) => cell === 1)) completedRows.push(r);
-      }
+      // Clear all previous classes
+      Array.from(gridDiv.children).forEach((cell) => {
+        cell.classList.remove(
+          "block-blue",
+          "block-orange",
+          "completed-line",
+          "bg-[#f2f4ff]"
+        );
+        cell.classList.add("bg-[#f2f4ff]"); // Default background
+      });
 
+      // Apply colors based on cell values
       Array.from(gridDiv.children).forEach((cell, i) => {
         const row = Math.floor(i / 8);
         const col = i % 8;
-        cell.classList.remove("block-blue", "block-orange", "completed-line");
-        if (board[row][col] === 1) cell.classList.add("block-blue");
-        if (completedRows.includes(row)) cell.classList.add("completed-line");
+        const cellValue = board[row][col];
+
+        // Remove default background when we have content
+        if (cellValue > 0) {
+          cell.classList.remove("bg-[#f2f4ff]");
+        }
+
+        switch (cellValue) {
+          case 1:
+            // Original grid blocks - blue
+            cell.classList.add("block-blue");
+            break;
+          case 2:
+            // Newly placed figure blocks - orange
+            cell.classList.add("block-orange");
+            break;
+          case 3:
+            // Completed line blocks - orange with black border
+            cell.classList.add("block-orange", "completed-line");
+            break;
+          default:
+            // Empty cells stay with default background
+            break;
+        }
       });
     }
+
+    // Show placement information
+    this.showPlacementInfo(solution);
+  }
+
+  showPlacementInfo(solution) {
+    // You could add placement hints here
+    console.log("Best solution steps:", solution.steps);
+    console.log("Total lines cleared:", solution.total_cleared);
   }
 }
