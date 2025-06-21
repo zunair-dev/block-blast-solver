@@ -94,9 +94,14 @@
   </div>
 
   <!-- Next Moves Card -->
-  <div id="next-moves-card" class="w-full flex flex-col items-center mt-12 hidden">
-    <h2 class="text-3xl font-bold mb-6">Placement Steps</h2>
-    <div class="flex gap-8 justify-center">
+  <div id="next-moves-card" class="w-full flex flex-col items-center mt-16 hidden">
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold mb-6">Placement Steps</h2>
+    </div>
+    
+    <!-- This is where the solution selector will be inserted -->
+    
+    <div class="flex gap-8 justify-center mt-4">
       <% 3.times do |step| %>
         <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center min-w-[280px]">
           <div class="step-indicator"><%= step + 1 %></div>
@@ -184,7 +189,7 @@
       screenshotTab.classList.remove("border-b-4", "border-purple-400", "pb-2");
       screenshotTab.classList.add("text-gray-400");
       
-      // Hide placement steps when switching to screenshot tab
+      // Hide placement steps when switching to manual tab
       nextMovesCard.classList.add("hidden");
     }
 
@@ -204,20 +209,6 @@
       btn.addEventListener("click", showManualEntry);
       manualTab.addEventListener("click", showManualEntry);
       screenshotTab.addEventListener("click", showScreenshotEntry);
-    }
-    
-    // Add event listener to the solve button
-    const solveButton = document.querySelector("[data-action='click->manual#solve']");
-    if (solveButton) {
-      solveButton.addEventListener("click", function() {
-        // Show placement steps when solve is clicked
-        nextMovesCard.classList.remove("hidden");
-        
-        // Scroll to the placement steps
-        setTimeout(() => {
-          nextMovesCard.scrollIntoView({ behavior: "smooth" });
-        }, 100);
-      });
     }
 
     // // Example mock data for 3 steps

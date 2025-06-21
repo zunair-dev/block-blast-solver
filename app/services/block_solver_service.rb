@@ -25,6 +25,12 @@ class BlockSolverService
     puts "Original grid: #{@original_grid.inspect}"
     puts "Figures: #{@figures.inspect}"
 
+    # Check if any figures are provided
+    if @figures.all? { |fig| fig.all? { |row| row.all? { |cell| cell == 0 } } }
+      puts "No figures provided"
+      return []
+    end
+
     # Find all possible figure placements
     all_solutions = []
 
@@ -38,6 +44,11 @@ class BlockSolverService
 
     puts "Total solutions found: #{all_solutions.length}"
 
+    if all_solutions.empty?
+      puts "No solutions found - returning empty array"
+      return []
+    end
+
     # Sort by total score (prioritize more line clears and efficiency)
     all_solutions.sort_by! { |solution| -calculate_score(solution) }
     result = all_solutions.take(limit)
@@ -48,6 +59,10 @@ class BlockSolverService
     end
 
     result
+  rescue => e
+    puts "Error in best_sequences: #{e.message}"
+    puts e.backtrace
+    []
   end
 
   private
@@ -113,6 +128,10 @@ class BlockSolverService
 
     puts "Generated #{solutions.length} solutions for order #{figure_order}"
     solutions
+  rescue => e
+    puts "Error in solve_sequence: #{e.message}"
+    puts e.backtrace
+    []
   end
 
   def get_all_placements(grid, figure)
